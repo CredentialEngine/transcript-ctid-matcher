@@ -14,6 +14,13 @@ Scores and confidence are never written into the CLR. The command prints
 them, `-v` lists each miss, and `--report FILE` writes every match and miss
 with its score to a separate JSON file.
 
+**Reading misses.** The most common cause of a miss is that the record was
+never published to the Registry, not a weak match. Matching can only be as
+complete as each institution's published catalog. That applies to the issuer,
+and also to transfer and prior-education institutions. If an institution
+itself isn't found, none of its courses or programs can match. See
+[Before you start](../README.md#before-you-start-institutions-must-publish-to-the-registry).
+
 Scoring lives in [`transcript_ctid_matcher/match.py`](../transcript_ctid_matcher/match.py)
 (`confidence_label`, `similarity`, and the per-entity matchers).
 

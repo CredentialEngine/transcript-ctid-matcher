@@ -63,6 +63,12 @@ sequenceDiagram
 
 Notes on the flow:
 
+- **Prerequisite, outside this flow:** each institution has a Credential
+  Registry account and has published its organization and catalog, for
+  example with the
+  [CTDL xTRA tool](https://credentialengine.org/toolkit/credential-engine-ctdl-xtra-tool/).
+  Without that, the search in steps 5–6 finds nothing and the CLR is returned without
+  CTIDs. See [Before you start](../README.md#before-you-start-institutions-must-publish-to-the-registry).
 - **Ordering is the contract.** Everything that writes into the CLR,
   including this step and anything AI Skills Inferencing adds, must happen
   before step 12 (signing). This component rejects input that already

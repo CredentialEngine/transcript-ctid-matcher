@@ -24,6 +24,28 @@ This is the Registry-matching core of
 without the AI PDF extraction and HTML reporting: transcripts arrive already
 structured as CLR, and the output is the annotated CLR itself.
 
+## Before you start: institutions must publish to the Registry
+
+Matching can only find what institutions have published. For a transcript
+to get CTIDs, the issuing institution must first:
+
+1. **Set up a Credential Engine Registry account** for the organization
+   ([account setup guidance](https://guidance.credentialengine.org/account-setup-and-access/)).
+2. **Publish its organization profile and catalog** to the Registry:
+   credentials and programs, courses, and ideally the competencies each one
+   teaches or assesses. Any publishing method works, including Credential
+   Engine's [CTDL xTRA tool](https://credentialengine.org/toolkit/credential-engine-ctdl-xtra-tool/).
+
+This is a one-time onboarding step, followed by keeping the catalog current.
+It isn't part of the per-transcript flow. The same applies to transfer and
+prior-education institutions: their courses and programs match only if they
+have published too. If an institution hasn't published, its transcript is
+written back with no CTIDs. That is not an error, and the match report shows
+each miss.
+
+This is separate from the **Credential Registry Search API key**
+(`CE_REGISTRY_API_KEY`), which whoever runs this matcher needs.
+
 ## Pipeline integration
 
 See [docs/architecture.md](docs/architecture.md) for sequence diagrams of
