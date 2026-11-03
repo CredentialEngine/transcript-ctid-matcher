@@ -2,7 +2,7 @@
 
 Usage:
     transcript-ctid-matcher transcript.json [-o OUT] [options]
-    parser ... | transcript-ctid-matcher - -o - | signer ...
+    parser ... | transcript-ctid-matcher - -o - | next-step ...
 
 The input CLR must be unsigned (matching happens before signing); use
 --strip-proofs only to experiment with already-signed sample files.

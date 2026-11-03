@@ -9,8 +9,8 @@ Intended flow (e.g. AACRAO's transcript parser):
     from transcript_ctid_matcher import match_clr
 
     outcome = match_clr(clr, api_key=os.environ["CE_REGISTRY_API_KEY"])
-    sign(clr)                       # the annotated document
-    review_queue.put(outcome.report)   # optional: confidence and misses
+    # clr now holds the CTIDs; signing it is the calling pipeline's job.
+    # outcome.report has confidence and misses, for optional review.
 
 The CLR must be unsigned: CTIDs added after signing would invalidate the
 proofs, so signed input is rejected with SignedInputError.

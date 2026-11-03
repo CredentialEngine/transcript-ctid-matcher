@@ -38,12 +38,21 @@ transcript --> parser --> unsigned CLR 2.0 --> match_clr() --> sign --> CLR 2.0
 **From Python**, call the library directly. It annotates the dict in place:
 
 ```python
-from transcript_ctid_matcher import match_clr, SignedInputError
+import json
+from transcript_ctid_matcher import match_clr
 
-outcome = match_clr(clr, api_key=CE_REGISTRY_API_KEY)   # or client=RegistryClient(...)
-sign_as_clr(clr)                                          # your signing step
-store_for_review(outcome.report)                          # optional
+with open("transcript.json") as f:        # unsigned CLR 2.0 from the parser
+    clr = json.load(f)
+
+outcome = match_clr(clr, api_key="<Credential Registry Search API key>")
+
+# clr now holds the CTIDs; hand it to the next step in your pipeline.
+print(outcome.summary)   # counts of matched courses, programs, competencies
+print(outcome.report)    # every match and miss with confidence and score
 ```
+
+Signing the result, and deciding what to do with the match report, are the
+calling pipeline's job; this package does neither.
 
 Options: `environment="sandbox"`, `cache_dir=...`, and
 `min_confidence="high"` to write only high-confidence matches. It raises
@@ -55,7 +64,7 @@ input isn't a `ClrCredential`.
 to stdout, and the run summary to stderr:
 
 ```bash
-parser ... | transcript-ctid-matcher - --report match-report.json | signer ...
+parser ... | transcript-ctid-matcher - --report match-report.json | next-step ...
 ```
 
 It exits non-zero, writing nothing to stdout, if the input is signed, isn't
