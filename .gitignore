@@ -1,0 +1,15 @@
+# Never commit transcripts, match output, or credentials. The only JSON
+# allowed is the synthetic test fixture.
+*.json
+!tests/fixtures/*.json
+*.pdf
+*.docx
+*.html
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/

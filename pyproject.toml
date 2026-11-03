@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transcript-ctid-matcher"
+version = "0.1.0"
+description = "Match a CLR 2.0 transcript to the Credential Registry and write CTIDs back into it."
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.0", "requests>=2.31"]
+
+[project.scripts]
+transcript-ctid-matcher = "transcript_ctid_matcher.cli:main"
+
+[tool.setuptools]
+packages = ["transcript_ctid_matcher"]
