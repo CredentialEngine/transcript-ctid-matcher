@@ -67,8 +67,15 @@ to stdout, and the run summary to stderr:
 parser ... | transcript-ctid-matcher - --report match-report.json | next-step ...
 ```
 
-It exits non-zero, writing nothing to stdout, if the input is signed, isn't
-a CLR, or the API key is missing.
+Input and output are always UTF-8 on every platform, and a leading
+byte-order mark is accepted. It exits non-zero, writing nothing to stdout,
+if the input is signed, isn't UTF-8 JSON or a CLR, or the API key is
+missing.
+
+On Windows, pipe with **PowerShell 7+** or `cmd.exe`. Windows PowerShell 5.1
+re-encodes text piped between programs and can corrupt non-ASCII
+characters, so there, pass files instead:
+`transcript-ctid-matcher in.json -o out.json`.
 
 ### Choosing a confidence threshold
 
@@ -81,16 +88,42 @@ not yet statistically calibrated, so consider `min_confidence="high"` /
 
 ## Quick start
 
+Requires Python 3.10 or later. Only creating and activating the virtual
+environment and setting the API key differ by platform.
+
+**macOS / Linux (bash, zsh)**
+
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 
 export CE_REGISTRY_API_KEY="<Credential Registry Search API key>"
-
-transcript-ctid-matcher "Transcript.json"
-# -> Transcript.matched.json next to the input, ready to sign
 ```
+
+**Windows (PowerShell)**
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -e .
+
+$env:CE_REGISTRY_API_KEY = "<Credential Registry Search API key>"
+```
+
+If `Activate.ps1` is blocked with "running scripts is disabled on this
+system", allow local scripts for your account once:
+`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. In `cmd.exe`,
+activate with `.venv\Scripts\activate.bat` and set the key with
+`set CE_REGISTRY_API_KEY=...`.
+
+**Then, on any platform:**
+
+```text
+transcript-ctid-matcher Transcript.json
+```
+
+This writes `Transcript.matched.json` next to the input, ready to sign.
 
 Options: `-o OUT` (output path, `-` for stdout), `--in-place` (overwrite the
 input), `--min-confidence high`, `--strip-proofs` (accept already-signed
@@ -98,6 +131,11 @@ sample files by removing their proofs; the output must be re-signed),
 `--report FILE` (separate JSON report of match confidence, scores and
 misses), `--env sandbox`, `--cache-dir DIR`, `--no-cache` (clear cached
 registry responses), `-v` (also list each miss).
+
+Registry responses are cached per user: `%LOCALAPPDATA%\transcript-ctid-matcher`
+on Windows, `~/Library/Caches/transcript-ctid-matcher` on macOS, and
+`~/.cache/transcript-ctid-matcher` on Linux (or under `$XDG_CACHE_HOME` if
+set).
 
 `python -m transcript_ctid_matcher.probe "<institution name>"` tests
 organization matching directly.
@@ -142,8 +180,10 @@ program names are sent to the Registry Search API, never learner data.
 
 ## Tests
 
-```bash
+```text
 python -m unittest discover -s tests
 ```
 
 The tests run offline against a synthetic CLR and a fake Registry client.
+GitHub Actions runs them on Linux and Windows, with Python 3.10 and 3.13, on
+every push and pull request (`.github/workflows/tests.yml`).

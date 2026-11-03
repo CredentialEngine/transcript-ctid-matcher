@@ -108,7 +108,7 @@ class HelperTests(unittest.TestCase):
 class ClrTests(unittest.TestCase):
     def setUp(self):
         # The fixture is signed; the pipeline's input (parser output) isn't.
-        self.signed = json.loads(FIXTURE.read_text())
+        self.signed = json.loads(FIXTURE.read_text(encoding="utf-8"))
         self.clr = unsigned(self.signed)
 
     def test_read(self):

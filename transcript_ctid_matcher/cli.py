@@ -33,6 +33,25 @@ def default_output(path: Path) -> Path:
     return path.with_name(name + ".matched.json")
 
 
+def read_input(src: Path | None) -> str:
+    """Read the CLR as UTF-8 from a file or stdin (src None).
+
+    Bytes are decoded explicitly: on Windows, Python 3.10-3.14 otherwise
+    decodes piped stdin with the legacy code page (e.g. cp1252). utf-8-sig
+    also drops the byte-order mark that Windows PowerShell 5.1 and Notepad
+    can add, which json.loads would reject.
+    """
+    raw = sys.stdin.buffer.read() if src is None else src.read_bytes()
+    return raw.decode("utf-8-sig")
+
+
+def write_stdout(text: str) -> None:
+    """Write UTF-8 bytes to stdout regardless of the platform's code page."""
+    sys.stdout.flush()
+    sys.stdout.buffer.write(text.encode("utf-8"))
+    sys.stdout.buffer.flush()
+
+
 def print_summary(outcome: MatchOutcome, out: str, verbose: bool) -> None:
     summary, results = outcome.summary, outcome.results
     err = sys.stderr
@@ -89,6 +108,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(argv)
 
+    # The summary can contain institution names outside the console's code
+    # page (e.g. cp1252 on Windows); never let that crash the run.
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(errors="backslashreplace")
+
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
                         format="%(levelname)s %(name)s: %(message)s")
 
@@ -111,10 +135,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     try:
-        text = sys.stdin.read() if from_stdin else src.read_text(encoding="utf-8")
+        text = read_input(src)
         clr = json.loads(text)
-    except json.JSONDecodeError as exc:
-        print(f"ERROR: input is not valid JSON: {exc}", file=sys.stderr)
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        print(f"ERROR: input is not valid UTF-8 JSON: {exc}", file=sys.stderr)
         return 2
 
     cache_dir = Path(args.cache_dir)
@@ -136,8 +160,7 @@ def main(argv: list[str] | None = None) -> int:
 
     body = json.dumps(clr, indent=2, ensure_ascii=False) + "\n"
     if out == "-":
-        sys.stdout.write(body)
-        sys.stdout.flush()
+        write_stdout(body)
     else:
         out_path = Path(out)
         tmp = out_path.with_name(out_path.name + ".tmp")
