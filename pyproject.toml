@@ -7,6 +7,7 @@ name = "transcript-ctid-matcher"
 version = "0.1.0"
 description = "Match a CLR 2.0 transcript to the Credential Registry and write CTIDs back into it."
 requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
 dependencies = ["pydantic>=2.0", "requests>=2.31"]
 
 [project.scripts]
