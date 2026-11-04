@@ -1,4 +1,16 @@
-# Transcript CTID Matcher
+# Transcript CTID Matcher (Prototype)
+
+> [!WARNING]
+> **Prototype for demonstration only. Not for production use.**
+>
+> This project is intended solely as a demonstration of the art of the possible. It is a prototype for exploring potential approaches and capabilities, not a production-ready application. The code has not been formally reviewed, tested, or vetted by Credential Engine for accuracy, security, reliability, or suitability for implementation.
+>
+> In particular:
+> - Match confidence thresholds are **expert-tuned, not statistically calibrated**, so some written CTIDs may be wrong.
+> - Whatever this tool writes into a CLR is then **signed into an official record**. Have a person review the match report before signing.
+> - The automated tests use **only a synthetic transcript and a fake Registry client**. The tool has not been validated against real transcripts at scale.
+>
+> Do not use it with real learner transcripts outside an approved, FERPA-compliant pilot.
 
 Reads a single **1EdTech CLR 2.0** transcript (JSON) and matches what it
 contains to records in the **Credential Registry**:
